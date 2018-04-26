@@ -1,0 +1,10 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║             Python BLE HCI Command Test  - ble_hci_cmd_test_wc.py        ║
+║                               0.0.1                                      ║
+║             Copyright (c) Wayne Chiu 2018. All Rights Reserved           ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                                                                          ║
+║   1. build com port for test command                                     ║
+║               to be continue...                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+this test tools use hci command to test 
