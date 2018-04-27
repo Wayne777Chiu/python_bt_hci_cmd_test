@@ -331,11 +331,16 @@ opcode_group_field_set = {
 	'tci_command_set'                      : b'\x3F',   
 }
 
-def opcode_combine(str1,str2):
-    opcode_group_field = int.from_bytes(opcode_group_field_set.get(str1),byteorder='big')
-    opcode_command_field = int.from_bytes(eval(str1)[str2],byteorder='big')
+def opcode_combine(ogf_data,ocf_data):
+    if isinstance(ogf_data,str) and isinstance(ogf_data,str):
+        opcode_group_field = int.from_bytes(opcode_group_field_set.get(ogf_data),byteorder='big')
+        opcode_command_field = int.from_bytes(eval(ogf_data)[ocf_data],byteorder='big')
 
-    #we need the step to converse data to integer
+    else : #isinstance(ogf_data,int) and isinstance(ogf_data,int):
+        opcode_group_field = ogf_data
+        opcode_command_field = ocf_data
+
+    #we need the step to converse data to integer ocf_data
     opcode_group_field_int = opcode_group_field << 10
 
     #this will make the opcode to byte adding
