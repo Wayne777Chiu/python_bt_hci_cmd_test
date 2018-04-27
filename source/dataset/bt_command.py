@@ -1,6 +1,8 @@
 import binascii
 import logging
 from dataset.bt_command_parameter import command_parameter_length_set
+import dataset.showlogo as slogo
+import time
 
 #data command
 link_control_command_set = {
@@ -331,6 +333,37 @@ opcode_group_field_set = {
 	'tci_command_set'                      : b'\x3F',   
 }
 
+def description_command(command_data):
+    #if parameter is string ==> command string
+    #if parameter is opcode ==> byte'\xNN\xNN' (byteorder = 'little'
+    find_it, target_group, target_command = find_command(command_data)
+
+    if find_it is True:
+        command_number =  int.from_bytes(find_command_number(target_command),byteorder='big')
+        command_number_string= '(0x'+''.join("{:02X} ".format(command_number))+')'
+
+        target_group_number = int.from_bytes(opcode_group_field_set.get(target_group), byteorder='big')
+        target_group_number_string = '(0x'+''.join("{:02X} ".format(target_group_number))+')'
+
+        if isinstance(command_data,str):
+            opcode_number_little = opcode_combine(target_group_number,command_number)
+        else:
+            opcode_number_little = command_data
+        #opcode_number_big = struct.pack('<1h', *struct.unpack('>1h',opcode_number_little))
+        opcode_number = int.from_bytes(opcode_number_little,byteorder='little')
+        opcode_number_string=  '(0x'+''.join("{:04X} ".format(opcode_number)) +')'
+
+    else:
+        command_number_string = '(None)'
+        target_group_number_string = '(None)'
+        opcode_number_string = '(None)'
+    print(slogo.decode('+--------------------------------------------------------------------------%'))
+    print(slogo.decode('|'),' CMD: ',target_command, command_number_string)
+    print(slogo.decode('|'),' GROUP: ',target_group,target_group_number_string)
+    print(slogo.decode('|'),' OPCODE: ',opcode_number_string)
+    print(slogo.decode('|'),str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())))
+    print(slogo.decode('p--------------------------------------------------------------------------q'))
+
 def opcode_combine(ogf_data,ocf_data):
     if isinstance(ogf_data,str) and isinstance(ogf_data,str):
         opcode_group_field = int.from_bytes(opcode_group_field_set.get(ogf_data),byteorder='big')
@@ -341,23 +374,44 @@ def opcode_combine(ogf_data,ocf_data):
         opcode_command_field = ocf_data
 
     #we need the step to converse data to integer ocf_data
-    opcode_group_field_int = opcode_group_field << 10
+    opcode_high_byte = opcode_group_field << 10
 
     #this will make the opcode to byte adding
     #opcode = int.to_bytes(opcode_group_field << 10 + opcode_command_field,length=2,byteorder='big')
-    opcode = int.to_bytes(opcode_group_field_int + opcode_command_field,length=2,byteorder='little')
+    opcode = int.to_bytes(opcode_high_byte + opcode_command_field,length=2,byteorder='little')
     return opcode
 
-def find_command(str1):
-    find_it = False
-    target_group = ''
-    for command_set in opcode_group_field_set:
-        value = eval(command_set).get(str1)
-        if value is not None:
-            find_it = True
-            target_group = command_set
 
-    return find_it,target_group
+#find command has two searching rule
+#    by command string
+#    by opcode (byte type '\xNN\xNN'
+def find_command(command_data):
+    find_it = False
+    target_group=None
+    target_command=None
+    if isinstance(command_data, str):
+        for command_set in opcode_group_field_set:
+            value = eval(command_set).get(command_data)
+            if value is not None:
+                find_it = True
+                target_group = command_set
+                target_command = command_data
+                break
+    else:
+        opcode_int = int.from_bytes(command_data,byteorder='little')
+        target_group_number = opcode_int >> 10
+        target_command_number = opcode_int & 0x3ff
+
+        for command_set in opcode_group_field_set:
+
+            if int.from_bytes(opcode_group_field_set[command_set],byteorder='big') == target_group_number:
+                for single_command in  eval(command_set):
+                    if int.from_bytes(eval(command_set).get(single_command),byteorder='big') == target_command_number:
+                        find_it = True
+                        target_group = command_set
+                        target_command = single_command
+                        break
+    return find_it,target_group,target_command
 
 def find_command_number(str1):
     command_number  = None
@@ -369,7 +423,7 @@ def find_command_number(str1):
     return command_number
 
 def find_parameter_length(str1):
-    find_it, target_group = find_command(str1)
+    find_it, target_group, target_command = find_command(str1)
     if find_it is not None:
         group_index = list(opcode_group_field_set.keys()).index(target_group)
         command_index = list(eval(target_group).keys()).index(str1)
@@ -393,7 +447,7 @@ def append_length_parameter(str1,previous_buffer):
         return False
 
 def generate_command(str1):
-    find_it, target_group = find_command(str1)
+    find_it, target_group, target_command = find_command(str1)
     if find_it is True:
         target_opcode = opcode_combine(target_group,str1)
         data_with_command_type = append_packet_type('Command', target_opcode)

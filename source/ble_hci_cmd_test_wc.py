@@ -30,6 +30,15 @@ test_command_set = {
     'HCI Inquiry Cancel' : b'\x01\x02\x04\x00',
 }
 
+'''
+def command_hci_read_local_support_feature(ser):
+    send_data = dataset.bt_command.generate_command('HCI Read Local Supported Features')
+    print(send_data)
+    serial_write(ser,send_data)
+    time.sleep(.1)
+    rx_buffer = serial_read(ser)
+    print(rx_buffer)
+'''
 def license_alarm():
     print(slogo.decode('+--------------------------------------------------------------------------%'))
     print(slogo.decode('|'), '            Python BLE HCI Command Test  - ', app_name, slogo.decode('      |'))
@@ -39,48 +48,6 @@ def license_alarm():
     print(slogo.decode('|'), '                                                                        ', slogo.decode('|'))
     print(slogo.decode('|'), '  1. build com port for test command                                    ', slogo.decode('|'))
     print(slogo.decode('|'), '              to be continue...                                         ', slogo.decode('|'))
-    print(slogo.decode('p--------------------------------------------------------------------------q'))
-
-def description_command(command_data):
-    #if parameter is string ==> command string
-    #if parameter is opcode ==> byte'\xNN\xNN' (byteorder = 'little'
-    find_it = False
-
-    if isinstance(command_data,str):
-        find_it, target_group = dataset.bt_command.find_command(command_data)
-        target_group_number = int.from_bytes(dataset.bt_command.opcode_group_field_set.get(target_group),byteorder='big')
-        command_string = command_data
-        #quit()
-    else:
-        print(command_data)
-        #target_group_number = list
-        target_group = ''
-        command_string = ''
-        target_group_number = 0
-        quit()
-    if find_it is True:
-        command_number =  int.from_bytes(dataset.bt_command.find_command_number(command_data),byteorder='big')
-        command_number_string= '(0x'+''.join("{:02X} ".format(command_number))+')'
-
-        target_group_number_string = '(0x'+''.join("{:02X} ".format(target_group_number))+')'
-        print('command_num',command_number)
-        print('target_group_number', target_group_number)
-        print(dataset.bt_command.opcode_combine(target_group_number,command_number))
-
-        opcode_number_little = dataset.bt_command.opcode_combine(target_group_number,command_number)
-        #opcode_number_big = struct.pack('<1h', *struct.unpack('>1h',opcode_number_little))
-        opcode_number = int.from_bytes(opcode_number_little,byteorder='little')
-        opcode_number_string=  '(0x'+''.join("{:04X} ".format(opcode_number)) +')'
-
-    else:
-        command_number_string = '(None)'
-        target_group_number_string = '(None)'
-        opcode_number_string = '(None)'
-    print(slogo.decode('+--------------------------------------------------------------------------%'))
-    print(slogo.decode('|'),' CMD: ',command_string, command_number_string)
-    print(slogo.decode('|'),' GROUP: ',target_group,target_group_number_string)
-    print(slogo.decode('|'),' OPCODE: ',opcode_number_string)
-    print(slogo.decode('|'),str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())))
     print(slogo.decode('p--------------------------------------------------------------------------q'))
 
 def save_file_log(file_string, data_buffer, open_type):
@@ -115,21 +82,11 @@ def serial_read(ser):
         #time.sleep(0.1)
     return rx_data
 
-def command_hci_read_local_support_feature(ser):
-    send_data = dataset.bt_command.generate_command('HCI Read Local Supported Features')
-    print(send_data)
-    serial_write(ser,send_data)
-    time.sleep(.1)
-    rx_buffer = serial_read(ser)
-    print(rx_buffer)
-
 def hci_command_test(ser,str1):
     send_data = dataset.bt_command.generate_command(str1)
     if Description_enable is True:
-        description_command(str1)
-
+        dataset.bt_command.description_command(str1)
     list_byte = list(send_data)
-    print(send_data)
     if Description_enable is True:
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
     serial_write(ser,send_data)
@@ -137,13 +94,7 @@ def hci_command_test(ser,str1):
     time.sleep(.1)
 
     rx_buffer = serial_read(ser)
-
-    print('check',rx_buffer)
-    #quit()
     list_byte = list(rx_buffer)
-    print('check',list_byte)
-    #quit()
-
     if Description_enable is True:
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
         print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
@@ -151,12 +102,8 @@ def hci_command_test(ser,str1):
 def hci_command_string_test(ser, str1):
     send_data = test_command_set.get(str1)
     if Description_enable is True:
-        description_command(str1)
-
+        dataset.bt_command.description_command(str1)
     list_byte = list(send_data)
-    print(send_data)
-    print('list',list_byte)
-    print(type(list_byte))
     if Description_enable is True:
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
     serial_write(ser,send_data)
@@ -164,11 +111,7 @@ def hci_command_string_test(ser, str1):
     time.sleep(.3)
 
     rx_buffer = serial_read(ser)
-    print('raw check',rx_buffer)
-    #quit()
     list_byte = list(rx_buffer)
-    print('raw check',list_byte)
-    #quit()
     if Description_enable is True:
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
         print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
@@ -180,8 +123,7 @@ def hci_command_test_by_std_raw(ser,list1):
         opcode_low = int(list1[1],16)
         opcode_int = opcode_high + opcode_low
         opcode = int.to_bytes(opcode_int, length=2,byteorder='little')
-
-        description_command(opcode)
+        dataset.bt_command.description_command(opcode)
     send_data =b''
     for item in list1:
         hex_item = int(item,16)
@@ -194,11 +136,7 @@ def hci_command_test_by_std_raw(ser,list1):
     time.sleep(.3)
 
     rx_buffer = serial_read(ser)
-    print('raw check',rx_buffer)
-    #quit()
     list_byte = list(rx_buffer)
-    print('raw check',list_byte)
-    #quit()
     if Description_enable is True:
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
         print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
@@ -242,9 +180,9 @@ def main():
     serial_open(ser)
 
     #hci_command_test(ser, 'HCI Inquiry Cancel')
-    hci_command_test_by_std_raw(ser,raw_buffer)
+    #hci_command_test_by_std_raw(ser,raw_buffer)
 
-    #hci_command_string_test(ser, 'HCI Inquiry Cancel')
+    hci_command_string_test(ser, 'HCI Inquiry Cancel')
     #hci_command_test(ser, 'HCI Read RSSI')
 
     #hci_command_test(ser, 'HCI Read Local Supported Commands')
