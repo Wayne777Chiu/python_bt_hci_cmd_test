@@ -1,5 +1,5 @@
-
-le_event_code = 0x3E
+import dataset.showlogo as slogo
+LE_EVENT_CODE = 0x3E
 
 event_code_set={
     'Inquiry Complete'                                  : b'\x01',         
@@ -123,21 +123,40 @@ sub_event_code_set = {
     'LE Channel Selection Algorithm Event'     : b'\x14',                        
 }
 
-def get_event_code(e_code,dig_code):
-    find_sub_event = False
-    event_string=''
-    if e_code == le_event_code:
-        find_sub_event = True
-    if find_sub_event is False:
-        for key,value in event_code_set.items():
-
-            if int.from_bytes(value,byteorder='big') == e_code:
-                event_string = key
-                break
+def check_sub_event_string(event_code):
+    if event_code == LE_EVENT_CODE:
+        return True
     else:
-        for key, value in sub_event_code_set.items():
-            if int.from_bytes(value,byteorder='big') == dig_code:
-                event_string = key
-    return find_sub_event,event_string
+        return False
+
+def get_event_string(e_code,dig_code):
+    find_event = False
+    event_string = None
+    sub_event_string = 'N/A'
+    for key, value in event_code_set.items():
+        if int.from_bytes(value, byteorder='big') == e_code:
+            find_event = True
+            event_string = key
+            break
+    if find_event is True:
+        find_sub_event = check_sub_event_string(e_code)
+        if find_sub_event is True:
+            for key, value in sub_event_code_set.items():
+                if int.from_bytes(value, byteorder='big') == e_code:
+                    sub_event_string = key
+                    break
+
+    return find_event,event_string,sub_event_string
+
+def description_event(pdu_array):
+    find_event, event_string, sub_event_string = get_event_string(pdu_array[0],pdu_array[2])
+    if find_event is True:
+        print(slogo.decode('+--------------------------------------------------------------------------%'))
+        print(slogo.decode('|'), ' Event: ', event_string, '(0x' + ''.join("{:02X} ".format(pdu_array[1])) + ')')
+        print(slogo.decode('|'), ' SUB-Event: ', sub_event_string, '(', sub_event_string, ')')
+        print(slogo.decode('|'), ' Parameter Length: ', pdu_array[2], '                       ')
+        print(slogo.decode('|'), ' Parameter: ',
+              'Parameter (0x' + ' 0x'.join("{:02X}".format(b) for b in pdu_array[3:]) + ')')
+        print(slogo.decode('p--------------------------------------------------------------------------q'))
 
 

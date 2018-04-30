@@ -21,8 +21,8 @@ raw_buffer = []
 
 
 #Basic Configuration
-serial1_port="COM1"
-serial_baudrate=58600
+serial1_port="COM5"
+serial_baudrate=115200
 
 test_command_set = {
     'HCI Inquiry'        : b'\x01\x01\x04\x05\x33\x8B\x9E\x30\x00', #LAP = 0x9E8B33 Len=0x30
@@ -179,10 +179,10 @@ def main():
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
 
-    #hci_command_test(ser, 'HCI Inquiry Cancel')
+    hci_command_test(ser, 'HCI Inquiry Cancel')
     #hci_command_test_by_std_raw(ser,raw_buffer)
 
-    hci_command_string_test(ser, 'HCI Inquiry Cancel')
+    #hci_command_string_test(ser, 'HCI Inquiry Cancel')
     #hci_command_test(ser, 'HCI Read RSSI')
 
     #hci_command_test(ser, 'HCI Read Local Supported Commands')
