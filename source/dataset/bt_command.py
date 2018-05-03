@@ -6,8 +6,8 @@ import time
 
 #data command
 link_control_command_set = {
-    'HCI Inquiry'                                   : b'\x01',
-    'HCI Inquiry Cancel'                            : b'\x02',                      
+    'HCI_Inquiry'                                   : b'\x01',
+    'HCI_Inquiry_Cancel'                            : b'\x02',                      
     'HCI Periodic Inquiry Mode'                     : b'\x03',             
     'HCI Exit Periodic Inquiry Mode'                : b'\x04',                  
     'HCI Create Connection'                         : b'\x05',         
