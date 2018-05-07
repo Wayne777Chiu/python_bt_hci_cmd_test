@@ -179,7 +179,7 @@ def main():
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
 
-    hci_command_test(ser, 'HCI Inquiry Cancel')
+    hci_command_test(ser, 'HCI_Inquiry')
     #hci_command_test_by_std_raw(ser,raw_buffer)
 
     #hci_command_string_test(ser, 'HCI Inquiry Cancel')

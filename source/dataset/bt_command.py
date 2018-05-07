@@ -3,6 +3,7 @@ import logging
 from dataset.bt_command_parameter import command_parameter_length_set
 import dataset.showlogo as slogo
 import time
+import dataset.bt_packet
 
 #data command
 link_control_command_set = {
@@ -421,13 +422,6 @@ tci_command_set = {
 'TCI LE Set Trace Level'                            : b'\x88',                                                  
 }
 
-packet_type_set = {
-	'Command'          : b'\x01',   
-	'Asynchronous Data': b'\x02',             
-	'Synchronous Data' : b'\x03',            
-	'Event'            : b'\x04', 
-}
-
 opcode_group_field_set = {
 	'link_control_command_set'             : b'\x01',            
 	'policy_command_set'                   : b'\x02',      
@@ -540,7 +534,7 @@ def find_parameter_length(str1):
         return None
 
 def append_packet_type(str1,buffer):
-    return packet_type_set.get(str1) + buffer
+    return dataset.bt_packet.packet_type_set.get(str1) + buffer
 
 def append_length_parameter(str1,previous_buffer):
     find_it, length_data = find_parameter_length(str1)
