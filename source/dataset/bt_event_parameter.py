@@ -90,12 +90,16 @@ event_parameters_set = {
     'Connectionless Slave Broadcast Receive'            : ['BD_ADDR','LT_ADDR','CLK','Offset','Receive_Status','Fragment','Data_Length','Data'],
     'Connectionless Slave Broadcast Timeout'            : ['BD_ADDR','LT_ADDR'],
     'Truncated Page Complete'                           : ['Status','BD_ADDR'],
-    'Slave Page Response Timeout'                       : [''],
+    'Slave Page Response Timeout'                       : [None],
     'Connectionless Slave Broadcast Channel Map Change' : ['Channel_Map'],
     'Inquiry Response Notification'                     : ['LAP','RSSI'],
     'Authenticated Payload Timeout Expired'             : ['Connection_Handle'],
     'SAMStatusChange'                                   : ['Connection_Handle','Local_SAM_Index','Local_SAM_TX_Availability','Local_SAM_RX_Availability','Remote_SAM_Index','Remote_SAM_TX_Availability','Remote_SAM_RX_Availability'],
 }
+
+#Multiple_En   0 means single
+#              1 means by i length
+#              2 means by k length
 
 event_parameters_configuration_set = {            #base_length #Multiple_En #meaningful Type
     'Status'                                   : [      1,         0,       'bytes'],            
