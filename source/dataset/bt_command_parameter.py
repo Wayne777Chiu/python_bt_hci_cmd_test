@@ -606,7 +606,7 @@ command_return_parameters_set = {
     'HCI_LE_Read_RF_Path_Compensation'                      : ['Status','RF_Tx_Path_Compensation_Value','RF_Rx_Path_Compensation_Value'],
     'HCI_LE_Write_RF_Path_Compensation'                     : ['Status'],
     'HCI_LE_Set_Privacy_Mode'                               : ['Status'],
-    'SMP Configure Security'                                : [],               
+    'SMP Configure Security'                                : [],
     'SMP Initiate Security'                                 : [],              
     'SMP PassKey Reply'                                     : [],          
     'SMP OOB Data Reply'                                    : [],  

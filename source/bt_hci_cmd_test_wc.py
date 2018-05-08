@@ -83,15 +83,17 @@ def serial_read(ser):
     return rx_data
 
 def hci_command_test(ser,str1):
-    send_data = dataset.bt_command.generate_command(str1)
+    send_data = dataset.bt_command.generate_command(str1, True)
     if Description_enable is True:
         dataset.bt_command.description_command(str1)
     list_byte = list(send_data)
     if Description_enable is True:
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
+
+
     serial_write(ser,send_data)
 
-    time.sleep(.1)
+    time.sleep(.3)
 
     rx_buffer = serial_read(ser)
     list_byte = list(rx_buffer)
@@ -99,7 +101,7 @@ def hci_command_test(ser,str1):
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
         print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
 
-def hci_command_string_test(ser, str1):
+def hci_command_test_by_inner_string(ser, str1):
     send_data = test_command_set.get(str1)
     if Description_enable is True:
         dataset.bt_command.description_command(str1)
@@ -179,10 +181,11 @@ def main():
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
 
+    #hci_command_test(ser, 'HCI_Inquiry_Cancel')
     hci_command_test(ser, 'HCI_Inquiry')
     #hci_command_test_by_std_raw(ser,raw_buffer)
 
-    #hci_command_string_test(ser, 'HCI Inquiry Cancel')
+    #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
     #hci_command_test(ser, 'HCI Read RSSI')
 
     #hci_command_test(ser, 'HCI Read Local Supported Commands')

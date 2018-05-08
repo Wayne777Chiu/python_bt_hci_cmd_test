@@ -1,9 +1,10 @@
 import binascii
 import logging
-from dataset.bt_command_parameter import command_parameter_length_set
+import dataset.bt_command_parameter #import command_parameter_length_set
 import dataset.showlogo as slogo
 import time
 import dataset.bt_packet
+import dataset.bt_hci_parameter
 
 #data command
 link_control_command_set = {
@@ -523,38 +524,55 @@ def find_command_number(str1):
             break
     return command_number
 
-def find_parameter_length(str1):
+def find_command_parameter_length(str1):
     find_it, target_group, target_command = find_command(str1)
-    if find_it is not None:
+    length_data = 0
+    if find_it is True:
+        find_length_done = False
+        parameter_list = dataset.bt_command_parameter.command_parameters_set.get(target_command)
+        #analyzer length exist
+        if parameter_list.__len__() == 1:
+            if parameter_list[0] is None:
+                find_length_done = True
+
+        if find_length_done is False:
+            for parameter in parameter_list:
+                length_data += dataset.bt_hci_parameter.parameters_configuration_set.get(parameter)[0]
+
+        '''
         group_index = list(opcode_group_field_set.keys()).index(target_group)
         command_index = list(eval(target_group).keys()).index(str1)
         length_data = command_parameter_length_set[group_index][command_index]
-        return find_it,length_data
-    else:
-        return None
+        '''
+
+    return find_it,length_data
+
 
 def append_packet_type(str1,buffer):
     return dataset.bt_packet.packet_type_set.get(str1) + buffer
 
 def append_length_parameter(str1,previous_buffer):
-    find_it, length_data = find_parameter_length(str1)
-    if find_it is not None:
-        if length_data == 0:
-            return previous_buffer + int.to_bytes(length_data,length=1,byteorder='big')
-        else:
-            print('Need update the code!!')
+    find_it, length_data = find_command_parameter_length(str1)
+    if find_it is True:
+        return previous_buffer + int.to_bytes(length_data, length=1, byteorder='little')
     else:
         logging.error("Cannot find the parameter-length: "+ str1)
         return False
 
-def generate_command(str1):
-    find_it, target_group, target_command = find_command(str1)
+#generate command has two searching rule
+#    by command string
+#    by opcode (byte type '\xNN\xNN'
+def generate_command(command_data,use_default):
+    find_it, target_group, target_command = find_command(command_data)
     if find_it is True:
-        target_opcode = opcode_combine(target_group,str1)
+        target_opcode = opcode_combine(target_group, target_command)
         data_with_command_type = append_packet_type('Command', target_opcode)
-        send_data = append_length_parameter(str1,data_with_command_type)
+        send_data = append_length_parameter(target_command,data_with_command_type)
+        for parameter in dataset.bt_command_parameter.command_parameters_set.get(target_command):
+            if use_default is True:
+                send_data +=  dataset.bt_hci_parameter.parameters_configuration_set.get(parameter)[3]
         return send_data
-
+    return None
 '''
 def main():
     packet1 = opcode_combine('link_control_command_set','HCI Inquiry')

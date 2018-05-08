@@ -149,7 +149,7 @@ def get_event_string(e_code,dig_code):
     return find_event,event_string,sub_event_string
 
 def description_event(pdu_array):
-    find_event, event_string, sub_event_string = get_event_string(pdu_array[0],pdu_array[2])
+    find_event, event_string, sub_event_string = get_event_string(pdu_array[1],pdu_array[2])
     if find_event is True:
         print(slogo.decode('+--------------------------------------------------------------------------%'))
         print(slogo.decode('|'), ' Event: ', event_string, '(0x' + ''.join("{:02X} ".format(pdu_array[1])) + ')')
