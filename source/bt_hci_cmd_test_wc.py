@@ -96,6 +96,10 @@ def hci_command_test(ser,str1):
     time.sleep(.3)
 
     rx_buffer = serial_read(ser)
+
+    if rx_buffer is 0:
+        print('No Response !!')
+        quit(1)
     list_byte = list(rx_buffer)
     if Description_enable is True:
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
@@ -113,6 +117,9 @@ def hci_command_test_by_inner_string(ser, str1):
     time.sleep(.3)
 
     rx_buffer = serial_read(ser)
+    if rx_buffer is 0:
+        print('No Response !!')
+        quit(1)
     list_byte = list(rx_buffer)
     if Description_enable is True:
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
@@ -128,13 +135,16 @@ def hci_command_test_by_std_raw(ser,list1):
         send_data += binary_data
     if Description_enable is True:
         dataset.bt_command.description_command(send_data)
-
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list(send_data)))
+
     serial_write(ser,send_data)
 
     time.sleep(.3)
 
     rx_buffer = serial_read(ser)
+    if rx_buffer is 0:
+        print('No Response !!')
+        quit(1)
     list_byte = list(rx_buffer)
     if Description_enable is True:
         dataset.hciresponse.rx_data_analyzer(rx_buffer)
@@ -179,8 +189,9 @@ def main():
     serial_open(ser)
 
     #hci_command_test(ser, 'HCI_Inquiry_Cancel')
-    hci_command_test(ser, 'HCI_Inquiry')
-    #hci_command_test_by_std_raw(ser,raw_buffer)
+    #hci_command_test(ser, 'HCI_Inquiry')
+    #hci_command_test(ser, 'HCI_Disconnect')
+    hci_command_test_by_std_raw(ser,raw_buffer)
 
     #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
     #hci_command_test(ser, 'HCI Read RSSI')

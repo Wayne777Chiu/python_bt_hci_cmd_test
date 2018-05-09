@@ -435,22 +435,80 @@ opcode_group_field_set = {
 	'tci_command_set'                      : b'\x3F',   
 }
 
-def description_command(command_data):
-    #if parameter is string ==> command string
-    #if parameter is opcode ==> byte'\xNN\xNN' (byteorder = 'little'
-    find_it, target_group, target_command = find_command(command_data)
+def description_command(command_binary):
+    command_list = list(command_binary)
+    opcode_high = command_list[2] << 8
+    opcode_low = command_list[1]
+    opcode_int = opcode_high + opcode_low
+    opcode = int.to_bytes(opcode_int, length=2, byteorder='little')
+    print('OPCODE' ,list(opcode))
+
+    find_it, target_group, target_command = find_command(opcode)
+
+    parameter_list = []
+    parameter_length = []
+    parameter_value_string = []
 
     if find_it is True:
+        index = 0
+        parameter_list = dataset.bt_command_parameter.command_parameters_set.get(target_command)
+
+        if parameter_list[0] is not None:
+            for item in parameter_list:
+                parameter_length.append(dataset.bt_hci_parameter.parameters_configuration_set.get(item)[0])
+        else:
+            parameter_length.append(0)
+
+        parameter_index = 0
+        parameter_limit = 0
+        parameter_update = True
+        temp_data_string=''
+        '''
+        length_limit = parameter_length[parameter_index-1] * parameter_index
+
+        length_limit += 3
+
+        print(parameter_length[parameter_index - 1])
+        print(parameter_index)
+        print(type(parameter_length[parameter_index - 1]))
+        print(type(parameter_index))
+        print('length_limit',length_limit)
+        '''
+        print('command_list',command_list)
+        for byte in command_list:
+
+            if index == 0:
+                packet_type = byte
+            elif index == 3:
+                parameter_total_length = byte
+                parameter_limit = parameter_length[parameter_index] +index
+            elif index > 3 and index <= parameter_limit :
+                if parameter_update is True:
+                    temp_data_string = ''.join("{:02X}".format(byte))
+                    parameter_update = False
+                else:
+                    temp_data_string = ''.join("{:02X}".format(byte)) + temp_data_string
+
+                if index == parameter_limit:
+                    parameter_value_string.append(temp_data_string)
+                    parameter_update = True
+                    if parameter_index < parameter_length.__len__()-1:
+                        parameter_index += 1
+                        parameter_limit = parameter_length[parameter_index] + index
+            index += 1
+
+        if index < 4:
+            print(' Command miss parameter length!!')
+            quit(1)
+
+
         command_number =  int.from_bytes(find_command_number(target_command),byteorder='big')
         command_number_string= '(0x'+''.join("{:02X} ".format(command_number))+')'
 
         target_group_number = int.from_bytes(opcode_group_field_set.get(target_group), byteorder='big')
         target_group_number_string = '(0x'+''.join("{:02X} ".format(target_group_number))+')'
+        opcode_number_little = opcode
 
-        if isinstance(command_data,str):
-            opcode_number_little = opcode_combine(target_group_number,command_number)
-        else:
-            opcode_number_little = command_data
         #opcode_number_big = struct.pack('<1h', *struct.unpack('>1h',opcode_number_little))
         opcode_number = int.from_bytes(opcode_number_little,byteorder='little')
         opcode_number_string=  '(0x'+''.join("{:04X} ".format(opcode_number)) +')'
@@ -458,12 +516,27 @@ def description_command(command_data):
     else:
         command_number_string = '(None)'
         target_group_number_string = '(None)'
-        opcode_number_string = '(None)'
+
+        opcode_number_little = opcode
+        opcode_number = int.from_bytes(opcode_number_little, byteorder='little')
+        opcode_number_string = '(0x' + ''.join("{:04X} ".format(opcode_number)) + ')'
+
     print(slogo.decode('+--------------------------------------------------------------------------%'))
     print(slogo.decode('|'),' CMD: ',target_command, command_number_string)
     print(slogo.decode('|'),' GROUP: ',target_group,target_group_number_string)
     print(slogo.decode('|'),' OPCODE: ',opcode_number_string)
-    print(slogo.decode('|'),str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())))
+    if not parameter_length:
+        print('No  such command ')
+        quit(1)
+    if parameter_length[0] == 0:
+        print(slogo.decode('|'), ' No Parameter ')
+    else:
+        index = 0
+        for item in parameter_list:
+            print(slogo.decode('| '),'(Size:', parameter_length[index],' Octet(s))', item ,' : ', '(0x'+parameter_value_string[index],')')
+            index += 1
+
+    print(slogo.decode('| '),str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())))
     print(slogo.decode('p--------------------------------------------------------------------------q'))
 
 def opcode_combine(ogf_data,ocf_data):
@@ -569,8 +642,9 @@ def generate_command(command_data,use_default):
         data_with_command_type = append_packet_type('Command', target_opcode)
         send_data = append_length_parameter(target_command,data_with_command_type)
         for parameter in dataset.bt_command_parameter.command_parameters_set.get(target_command):
-            if use_default is True:
-                send_data +=  dataset.bt_hci_parameter.parameters_configuration_set.get(parameter)[3]
+            if parameter is not None:
+                if use_default is True:
+                    send_data +=  dataset.bt_hci_parameter.parameters_configuration_set.get(parameter)[3]
         return send_data
     return None
 '''
