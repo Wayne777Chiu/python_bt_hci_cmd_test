@@ -84,10 +84,10 @@ def serial_read(ser):
 
 def hci_command_test(ser,str1):
     send_data = dataset.bt_command.generate_command(str1, True)
-    if Description_enable is True:
-        dataset.bt_command.description_command(str1)
+
     list_byte = list(send_data)
     if Description_enable is True:
+        dataset.bt_command.description_command(send_data)
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
 
 
@@ -103,10 +103,10 @@ def hci_command_test(ser,str1):
 
 def hci_command_test_by_inner_string(ser, str1):
     send_data = test_command_set.get(str1)
-    if Description_enable is True:
-        dataset.bt_command.description_command(str1)
     list_byte = list(send_data)
+
     if Description_enable is True:
+        dataset.bt_command.description_command(send_data)
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
     serial_write(ser,send_data)
 
@@ -120,18 +120,15 @@ def hci_command_test_by_inner_string(ser, str1):
 
 def hci_command_test_by_std_raw(ser,list1):
     #list_int = list(map(int,list1))
-    if Description_enable is True:
-        opcode_high = int(list1[2],16) << 8
-        opcode_low = int(list1[1],16)
-        opcode_int = opcode_high + opcode_low
-        opcode = int.to_bytes(opcode_int, length=2,byteorder='little')
-        dataset.bt_command.description_command(opcode)
+
     send_data =b''
     for item in list1:
         hex_item = int(item,16)
         binary_data = int.to_bytes(hex_item,length=1,byteorder='big')
         send_data += binary_data
     if Description_enable is True:
+        dataset.bt_command.description_command(send_data)
+
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list(send_data)))
     serial_write(ser,send_data)
 
