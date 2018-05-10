@@ -1,4 +1,8 @@
 import dataset.showlogo as slogo
+import dataset.bt_hci_parameter
+import dataset.bt_event_parameter
+import dataset.bt_command_parameter
+
 LE_EVENT_CODE = 0x3E
 
 event_code_set={
@@ -150,13 +154,85 @@ def get_event_string(e_code,dig_code):
 
 def description_event(pdu_array):
     find_event, event_string, sub_event_string = get_event_string(pdu_array[1],pdu_array[2])
+    find_sub_event = False
+    index = 0
+    parameter_list = []
+    parameter_length = []
+    parameter_value_string = []
+
     if find_event is True:
+        if sub_event_string == 'N/A':
+            find_sub_event = False
+        else:
+            sub_event_string = True
+
+        temp_parameter_list =  dataset.bt_event_parameter.event_parameters_set.get(event_string)
+        return_parameter_list = dataset.bt_command_parameter.command_return_parameters_set.get(dataset.bt_hci_parameter.command_for_return_parameter)
+
+        if temp_parameter_list[0] is not None:
+            for item in temp_parameter_list:
+                if item == 'Return_Parameters':
+                    for return_item in return_parameter_list:
+                        if return_item is None:
+                            parameter_list.append('TEMP_ITEM')
+                            parameter_length.append(1)
+                        else:
+                            parameter_list.append(return_item)
+                            parameter_length.append(dataset.bt_hci_parameter.parameters_configuration_set.get(return_item)[0])
+                else:
+                    parameter_length.append(dataset.bt_hci_parameter.parameters_configuration_set.get(item)[0])
+                    parameter_list.append(item)
+        else:
+            parameter_length.append(0)
+
+        parameter_limit = 0
+        parameter_index = 0
+        parameter_update = True
+        temp_data_string=''
+
+        if find_sub_event is True:
+            parameter_start_index = 4
+        else:
+            parameter_start_index = 3
+
+        for byte in pdu_array:
+            if index == 0:
+                packet_type = byte
+            elif index == parameter_start_index -1:
+                    parameter_total_length = byte
+                    parameter_limit = parameter_length[parameter_index] + index
+            elif index >= parameter_start_index and index <= parameter_limit:
+                if parameter_update is True:
+                    temp_data_string = ''.join("{:02X}".format(byte))
+                    parameter_update = False
+                else:
+                    temp_data_string = ''.join("{:02X}".format(byte)) + temp_data_string
+
+                if index == parameter_limit:
+                    parameter_value_string.append(temp_data_string)
+                    parameter_update = True
+                    if parameter_index < parameter_length.__len__() - 1:
+                        parameter_index += 1
+                        parameter_limit = parameter_length[parameter_index] + index
+            index += 1
+
         print(slogo.decode('+--------------------------------------------------------------------------%'))
         print(slogo.decode('|'), ' Event: ', event_string, '(0x' + ''.join("{:02X} ".format(pdu_array[1])) + ')')
         print(slogo.decode('|'), ' SUB-Event: ', sub_event_string, '(', sub_event_string, ')')
         print(slogo.decode('|'), ' Parameter Length: ', pdu_array[2], '                       ')
         print(slogo.decode('|'), ' Parameter: ',
               'Parameter (0x' + ' 0x'.join("{:02X}".format(b) for b in pdu_array[3:]) + ')')
+        if not parameter_length:
+            print('No  such command ')
+            quit(1)
+        if parameter_length[0] == 0:
+            print(slogo.decode('|'), ' No Parameter ')
+        else:
+            index = 0
+            for item in parameter_list:
+                print(slogo.decode('| '), '(Size:', parameter_length[index], ' Octet(s))', item, ' : ',
+                      '(0x' + parameter_value_string[index], ')')
+                index += 1
         print(slogo.decode('p--------------------------------------------------------------------------q'))
 
 

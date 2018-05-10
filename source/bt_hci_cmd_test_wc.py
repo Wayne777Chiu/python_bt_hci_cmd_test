@@ -93,17 +93,22 @@ def hci_command_test(ser,str1):
 
     serial_write(ser,send_data)
 
-    time.sleep(.3)
+    #time.sleep(.3)
 
-    rx_buffer = serial_read(ser)
+    for i in range(1):
+        time.sleep(.3)
+        rx_buffer = serial_read(ser)
 
-    if rx_buffer is 0:
-        print('No Response !!')
-        quit(1)
-    list_byte = list(rx_buffer)
-    if Description_enable is True:
-        dataset.hciresponse.rx_data_analyzer(rx_buffer)
-        print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if rx_buffer is 0:
+            print('No Response !!')
+            print('index i',i)
+        else:
+            list_byte = list(rx_buffer)
+            if Description_enable is True:
+                dataset.hciresponse.rx_data_analyzer(rx_buffer)
+                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+
+
 
 def hci_command_test_by_inner_string(ser, str1):
     send_data = test_command_set.get(str1)
@@ -173,7 +178,7 @@ def parse_args_check():
 
 def main():
     global raw_buffer
-
+    command_for_return_parameter = None
     '''
     print('Number of arguments:', len(sys.argv), 'arguments.')
     print('Simple_tree() Argument List:' , str(sys.argv))
@@ -188,10 +193,12 @@ def main():
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
 
-    #hci_command_test(ser, 'HCI_Inquiry_Cancel')
-    #hci_command_test(ser, 'HCI_Inquiry')
+    hci_command_test(ser, 'HCI_Inquiry_Cancel')
+    hci_command_test(ser, 'HCI_Read_Clock_Offset')
+    hci_command_test(ser, 'HCI_Read_BD_ADDR')
+    hci_command_test(ser, 'HCI_Inquiry')
     #hci_command_test(ser, 'HCI_Disconnect')
-    hci_command_test_by_std_raw(ser,raw_buffer)
+    #hci_command_test_by_std_raw(ser,raw_buffer)
 
     #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
     #hci_command_test(ser, 'HCI Read RSSI')

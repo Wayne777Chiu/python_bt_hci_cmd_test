@@ -441,7 +441,7 @@ def description_command(command_binary):
     opcode_low = command_list[1]
     opcode_int = opcode_high + opcode_low
     opcode = int.to_bytes(opcode_int, length=2, byteorder='little')
-    print('OPCODE' ,list(opcode))
+    #print('OPCODE' ,list(opcode))
 
     find_it, target_group, target_command = find_command(opcode)
 
@@ -452,9 +452,10 @@ def description_command(command_binary):
     if find_it is True:
         index = 0
         parameter_list = dataset.bt_command_parameter.command_parameters_set.get(target_command)
-
+        dataset.bt_hci_parameter.command_for_return_parameter = target_command
         if parameter_list[0] is not None:
             for item in parameter_list:
+
                 parameter_length.append(dataset.bt_hci_parameter.parameters_configuration_set.get(item)[0])
         else:
             parameter_length.append(0)
@@ -463,18 +464,6 @@ def description_command(command_binary):
         parameter_limit = 0
         parameter_update = True
         temp_data_string=''
-        '''
-        length_limit = parameter_length[parameter_index-1] * parameter_index
-
-        length_limit += 3
-
-        print(parameter_length[parameter_index - 1])
-        print(parameter_index)
-        print(type(parameter_length[parameter_index - 1]))
-        print(type(parameter_index))
-        print('length_limit',length_limit)
-        '''
-        print('command_list',command_list)
         for byte in command_list:
 
             if index == 0:
