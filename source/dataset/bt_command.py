@@ -431,8 +431,8 @@ opcode_group_field_set = {
 	'status_command_set'                   : b'\x05',      
 	'test_command_set'                     : b'\x06',    
 	'le_command_set'                       : b'\x08',  
-	'smp_command_set'                      : b'\x09',   
-	'tci_command_set'                      : b'\x3F',   
+	#'smp_command_set'                      : b'\x09',
+	#'tci_command_set'                      : b'\x3F',
 }
 
 def description_command(command_binary):
@@ -453,6 +453,7 @@ def description_command(command_binary):
         index = 0
         parameter_list = dataset.bt_command_parameter.command_parameters_set.get(target_command)
         dataset.bt_hci_parameter.command_for_return_parameter = target_command
+
         if parameter_list[0] is not None:
             for item in parameter_list:
 
