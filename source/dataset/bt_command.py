@@ -451,12 +451,13 @@ def description_command(command_binary):
 
     if find_it is True:
         index = 0
+        parameter_total_length = 0
         parameter_list = dataset.bt_command_parameter.command_parameters_set.get(target_command)
         dataset.bt_hci_parameter.command_for_return_parameter = target_command
 
         if parameter_list[0] is not None:
             for item in parameter_list:
-
+                parameter_total_length += dataset.bt_hci_parameter.parameters_configuration_set.get(item)[0]
                 parameter_length.append(dataset.bt_hci_parameter.parameters_configuration_set.get(item)[0])
         else:
             parameter_length.append(0)
@@ -470,7 +471,6 @@ def description_command(command_binary):
             if index == 0:
                 packet_type = byte
             elif index == 3:
-                parameter_total_length = byte
                 parameter_limit = parameter_length[parameter_index] +index
             elif index > 3 and index <= parameter_limit :
                 if parameter_update is True:
@@ -486,8 +486,7 @@ def description_command(command_binary):
                         parameter_index += 1
                         parameter_limit = parameter_length[parameter_index] + index
             index += 1
-
-        if index < 4:
+        if index < 3 + parameter_total_length:
             print(' Command miss parameter length!!')
             quit(1)
 
