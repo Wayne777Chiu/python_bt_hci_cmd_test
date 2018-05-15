@@ -436,6 +436,9 @@ opcode_group_field_set = {
 }
 
 def description_command(command_binary):
+    if not command_binary:
+        print(' Command  parameter length error!!')
+        quit(1)
     command_list = list(command_binary)
     opcode_high = command_list[2] << 8
     opcode_low = command_list[1]
@@ -486,8 +489,10 @@ def description_command(command_binary):
                         parameter_index += 1
                         parameter_limit = parameter_length[parameter_index] + index
             index += 1
-        if index < 3 + parameter_total_length:
-            print(' Command miss parameter length!!')
+        print(index)
+        print(parameter_total_length + 3)
+        if index <= 3 + parameter_total_length:
+            print(' Command parameter length error!!')
             quit(1)
 
 
