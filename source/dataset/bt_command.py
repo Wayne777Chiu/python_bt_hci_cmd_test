@@ -489,8 +489,6 @@ def description_command(command_binary):
                         parameter_index += 1
                         parameter_limit = parameter_length[parameter_index] + index
             index += 1
-        print(index)
-        print(parameter_total_length + 3)
         if index <= 3 + parameter_total_length:
             print(' Command parameter length error!!')
             quit(1)

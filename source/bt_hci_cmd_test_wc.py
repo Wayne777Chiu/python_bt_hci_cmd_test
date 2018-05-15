@@ -192,29 +192,21 @@ def main():
     #serial_baudrate1 = int(serial_baudrate,0)
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
-
-    hci_command_test(ser, 'HCI_Inquiry_Cancel')
-    hci_command_test(ser, 'HCI_Read_Clock_Offset')
+    '''    hci_command_test(ser, 'HCI_Read_Local_Supported_Features')
+    hci_command_test(ser, 'HCI_LE_Set_Event_Mask')
+    hci_command_test(ser, 'HCI_LE_Read_Buffer_Size')
+    hci_command_test(ser, 'HCI_Read_Buffer_Size')
+    hci_command_test(ser,'HCI_LE_Read_Local_Supported_Features')
     hci_command_test(ser, 'HCI_Read_BD_ADDR')
+    hci_command_test(ser, 'HCI_Read_Local_Name')
+    hci_command_test(ser, 'HCI_Read_Local_Version_Information')
     hci_command_test(ser, 'HCI_Inquiry')
-    #hci_command_test(ser, 'HCI_Disconnect')
-    #hci_command_test_by_std_raw(ser,raw_buffer)
+    hci_command_test(ser, 'HCI_Inquiry_Cancel')'''
 
+
+    hci_command_test_by_std_raw(ser,raw_buffer)
     #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
-    #hci_command_test(ser, 'HCI Read RSSI')
-
-    #hci_command_test(ser, 'HCI Read Local Supported Commands')
-    #time.sleep(1)
-    #hci_command_test(ser, 'HCI Exit Periodic Inquiry Mode')
-
-    #hci_command_test(ser,'HCI Read Local Supported Features')
-    #hci_command_test(ser,'HCI Read Buffer Size')
-    #hci_command_test(ser, 'HCI Read BD_ADDR')
-    #if serial1_Enable==True:
     serial_close(ser)
-    
-
-
 
 if __name__ == '__main__':
     main()

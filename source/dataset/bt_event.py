@@ -223,14 +223,19 @@ def description_event(pdu_array):
         print(slogo.decode('|'), ' Parameter: ',
               'Parameter (0x' + ' 0x'.join("{:02X}".format(b) for b in pdu_array[3:]) + ')')
         if not parameter_length:
-            print('No  such command ')
+            print('No  such Event ')
             quit(1)
         if parameter_length[0] == 0:
             print(slogo.decode('|'), ' No Parameter ')
         else:
             index = 0
             for item in parameter_list:
-                print(slogo.decode('| '), '(Size:', parameter_length[index], ' Octet(s))', item, ' : ',
+
+                if parameter_value_string.__len__() <= index:
+                    print(slogo.decode('| '), '(Size:', parameter_length[index], ' Octet(s))', item, ' : ',
+                          '( No Parameter Value )')
+                else:
+                    print(slogo.decode('| '), '(Size:', parameter_length[index], ' Octet(s))', item, ' : ',
                       '(0x' + parameter_value_string[index], ')')
                 index += 1
         print(slogo.decode('p--------------------------------------------------------------------------q'))

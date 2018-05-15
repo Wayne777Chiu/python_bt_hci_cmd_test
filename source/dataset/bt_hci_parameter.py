@@ -360,7 +360,7 @@ parameters_configuration_set = {               #base_length #Multiple_En #meanin
     'Test_Parameters'                          : [      1,         0,       'bytes', b''             ],
     'DM1_ACL-U_Mode'                           : [      1,         0,       'bytes', b''             ],
     'eSCO_Loopback_Mode'                       : [      1,         0,       'bytes', b''             ],
-    'LE_Event_Mask'                            : [      8,         0,       'bits' , b''             ],
+    'LE_Event_Mask'                            : [      8,         0,       'bits' , b'\x1F\x00\x00\x00\x00\x00\x00\x00'], #\x1F\x00
     'Random_Address'                           : [      6,         0,       'bytes', b''             ],
     'Advertising_Interval_Min'                 : [      2,         0,       'bytes', b''             ],
     'Advertising_Interval_Max'                 : [      2,         0,       'bytes', b''             ],
