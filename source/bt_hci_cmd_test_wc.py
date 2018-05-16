@@ -204,6 +204,7 @@ def main():
     hci_command_test(ser, 'HCI_Inquiry_Cancel')'''
 
 
+
     hci_command_test_by_std_raw(ser,raw_buffer)
     #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
     serial_close(ser)
