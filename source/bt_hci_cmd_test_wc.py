@@ -13,7 +13,7 @@ import dataset.hciresponse
 
 path = os.getcwd() + '\\'
 app_name = __file__.replace(path,'')
-version_string = "0.0.2"
+version_string = "0.0.7"
 Description_enable = True
 raw_buffer = []
 #log
@@ -23,6 +23,7 @@ raw_buffer = []
 #Basic Configuration
 serial1_port="COM5"
 serial_baudrate=115200
+duration_timer = 1
 
 test_command_set = {
     'HCI Inquiry'        : b'\x01\x01\x04\x05\x33\x8B\x9E\x30\x00', #LAP = 0x9E8B33 Len=0x30
@@ -43,7 +44,7 @@ def license_alarm():
     print(slogo.decode('+--------------------------------------------------------------------------%'))
     print(slogo.decode('|'), '            Python BLE HCI Command Test  - ', app_name, slogo.decode('      |'))
     print(slogo.decode('|'), '                              '+version_string+'                                     ', slogo.decode('|'))
-    print(slogo.decode('|'), '            Copyright (c) Wayne Chiu 2018. All Rights Reserved          ', slogo.decode('|'))
+    #print(slogo.decode('|'), '            Copyright (c) Wayne Chiu 2018. All Rights Reserved          ', slogo.decode('|'))
     print(slogo.decode('k--------------------------------------------------------------------------f'))
     print(slogo.decode('|'), '                                                                        ', slogo.decode('|'))
     print(slogo.decode('|'), '  1. build com port for test command                                    ', slogo.decode('|'))
@@ -83,6 +84,7 @@ def serial_read(ser):
     return rx_data
 
 def hci_command_test(ser,str1):
+    global duration_time
     send_data = dataset.bt_command.generate_command(str1, True)
 
     list_byte = list(send_data)
@@ -90,27 +92,20 @@ def hci_command_test(ser,str1):
         dataset.bt_command.description_command(send_data)
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
 
-
     serial_write(ser,send_data)
-
     #time.sleep(.3)
-
-    for i in range(1):
+    for i in range(duration_time):
         time.sleep(.3)
         rx_buffer = serial_read(ser)
-
-        if rx_buffer is 0:
-            print('No Response !!')
-            print('index i',i)
-        else:
+        if rx_buffer is not 0:
             list_byte = list(rx_buffer)
             if Description_enable is True:
                 dataset.hciresponse.rx_data_analyzer(rx_buffer)
                 print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-
-
+    duration_time = 1
 
 def hci_command_test_by_inner_string(ser, str1):
+    global duration_time
     send_data = test_command_set.get(str1)
     list_byte = list(send_data)
 
@@ -120,19 +115,18 @@ def hci_command_test_by_inner_string(ser, str1):
     serial_write(ser,send_data)
 
     time.sleep(.3)
-
-    rx_buffer = serial_read(ser)
-    if rx_buffer is 0:
-        print('No Response !!')
-        quit(1)
-    list_byte = list(rx_buffer)
-    if Description_enable is True:
-        dataset.hciresponse.rx_data_analyzer(rx_buffer)
-        print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
+    for i in range(duration_time):
+        time.sleep(.3)
+        rx_buffer = serial_read(ser)
+        if rx_buffer is not 0:
+            list_byte = list(rx_buffer)
+            if Description_enable is True:
+                dataset.hciresponse.rx_data_analyzer(rx_buffer)
+                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+    duration_time = 1
 
 def hci_command_test_by_std_raw(ser,list1):
-    #list_int = list(map(int,list1))
-
+    global duration_time
     send_data =b''
     for item in list1:
         hex_item = int(item,16)
@@ -146,14 +140,15 @@ def hci_command_test_by_std_raw(ser,list1):
 
     time.sleep(.3)
 
-    rx_buffer = serial_read(ser)
-    if rx_buffer is 0:
-        print('No Response !!')
-        quit(1)
-    list_byte = list(rx_buffer)
-    if Description_enable is True:
-        dataset.hciresponse.rx_data_analyzer(rx_buffer)
-        print('Receive the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
+    for i in range(duration_time):
+        time.sleep(.3)
+        rx_buffer = serial_read(ser)
+        if rx_buffer is not 0:
+            list_byte = list(rx_buffer)
+            if Description_enable is True:
+                dataset.hciresponse.rx_data_analyzer(rx_buffer)
+                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+    duration_time = 1
 
 def parse_args_check():
     parser = argparse.ArgumentParser(description='Usage for HCI Command Test')
@@ -161,6 +156,7 @@ def parse_args_check():
     parser.add_argument('--com', action='store', nargs=1, dest='com_port', help='COM Port')
     parser.add_argument('--baudrate', action='store', nargs=1, dest='baud_rate', help='Baudrate')
     parser.add_argument('--raw', action='store', nargs='*', dest='raw_data',  help='Using command with raw data.')
+    parser.add_argument('--time', action='store', nargs=1, dest='duration', help='Scan event timer')
     parser.add_argument('-l','--license', action='store_true',dest='show_logo_switch',default=None,help='Show logo')
     args = parser.parse_args()
     if args.show_logo_switch is True:
@@ -175,23 +171,20 @@ def parse_args_check():
     if args.baud_rate is not None:
         global serial_baudrate
         serial_baudrate = int(args.baud_rate[0], 10)
+    if args.duration is not None:
+        global duration_time
+        duration_time = int(args.duration[0], 10)
 
 def main():
     global raw_buffer
     command_for_return_parameter = None
-    '''
-    print('Number of arguments:', len(sys.argv), 'arguments.')
-    print('Simple_tree() Argument List:' , str(sys.argv))
-    print(app_name)
-    '''
     parse_args_check()
-    #resp.display_response()
 
-    
     #init...
     #serial_baudrate1 = int(serial_baudrate,0)
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
+
     '''    hci_command_test(ser, 'HCI_Read_Local_Supported_Features')
     hci_command_test(ser, 'HCI_LE_Set_Event_Mask')
     hci_command_test(ser, 'HCI_LE_Read_Buffer_Size')
