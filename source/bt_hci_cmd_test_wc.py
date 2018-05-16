@@ -42,9 +42,9 @@ def command_hci_read_local_support_feature(ser):
 '''
 def license_alarm():
     print(slogo.decode('+--------------------------------------------------------------------------%'))
-    print(slogo.decode('|'), '            Python BLE HCI Command Test  - ', app_name, slogo.decode('      |'))
+    print(slogo.decode('|'), '            Python BLE HCI Command Test  - ', app_name, slogo.decode('       |'))
     print(slogo.decode('|'), '                              '+version_string+'                                     ', slogo.decode('|'))
-    #print(slogo.decode('|'), '            Copyright (c) Wayne Chiu 2018. All Rights Reserved          ', slogo.decode('|'))
+    print(slogo.decode('|'), '            Copyright (c) Wayne Chiu 2018. All Rights Reserved          ', slogo.decode('|'))
     print(slogo.decode('k--------------------------------------------------------------------------f'))
     print(slogo.decode('|'), '                                                                        ', slogo.decode('|'))
     print(slogo.decode('|'), '  1. build com port for test command                                    ', slogo.decode('|'))
