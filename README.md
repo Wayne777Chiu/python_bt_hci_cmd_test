@@ -18,3 +18,30 @@ bt_hci_cmd_test_wc.py [-h] [-v] [--com COM_PORT] [--baudrate BAUD_RATE]
                         Using command with raw data.
 -  -l, --license         Show logo
 
+### Example
+```graphviz= 
+//HCI_Read_Local_Supported_Features
+bt_hci_cmd_test_wc.py --raw 1 3 10 0
+//HCI_LE_Set_Event_Mask
+bt_hci_cmd_test_wc.py --raw 1 1 20 8 1f 0 0 0 0 0 0 0
+//HCI_LE_Read_Buffer_Size
+bt_hci_cmd_test_wc.py --raw 1 2 20 0
+//HCI_Read_Buffer_Size
+bt_hci_cmd_test_wc.py --raw 1 5 10 0
+//HCI_LE_Read_Local_Supported_Features
+bt_hci_cmd_test_wc.py --raw 1 3 20 0
+//HCI_Read_BD_ADDR
+bt_hci_cmd_test_wc.py --raw 1 9 10 0
+//HCI_Read_Local_Name
+bt_hci_cmd_test_wc.py --raw 1 14 c 0
+//HCI_Read_Local_Version_Information
+bt_hci_cmd_test_wc.py --raw 1 1 10 0
+//HCI_Inquiry
+bt_hci_cmd_test_wc.py --raw 1 1 4 5 33 8b 9e 30 0
+//HCI_Inquiry_Cancel
+bt_hci_cmd_test_wc.py --raw 1 2 4 0
+```
+
+
+## Testing Device
+- CC2540 USB Dongle
