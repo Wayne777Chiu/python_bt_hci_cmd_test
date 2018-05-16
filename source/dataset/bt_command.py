@@ -423,6 +423,10 @@ tci_command_set = {
 'TCI LE Set Trace Level'                            : b'\x88',                                                  
 }
 
+TI_specific_commands_set = {
+    'GAP Device Discovery Request'                        : b'\x02\x04',
+}
+
 opcode_group_field_set = {
 	'link_control_command_set'             : b'\x01',            
 	'policy_command_set'                   : b'\x02',      
@@ -433,6 +437,7 @@ opcode_group_field_set = {
 	'le_command_set'                       : b'\x08',  
 	#'smp_command_set'                      : b'\x09',
 	#'tci_command_set'                      : b'\x3F',
+    'TI_specific_commands_set'                  : b'\x3F'
 }
 
 def description_command(command_binary):
@@ -444,7 +449,6 @@ def description_command(command_binary):
     opcode_low = command_list[1]
     opcode_int = opcode_high + opcode_low
     opcode = int.to_bytes(opcode_int, length=2, byteorder='little')
-    #print('OPCODE' ,list(opcode))
 
     find_it, target_group, target_command = find_command(opcode)
 
@@ -568,9 +572,7 @@ def find_command(command_data):
         opcode_int = int.from_bytes(command_data,byteorder='little')
         target_group_number = opcode_int >> 10
         target_command_number = opcode_int & 0x3ff
-
         for command_set in opcode_group_field_set:
-
             if int.from_bytes(opcode_group_field_set[command_set],byteorder='big') == target_group_number:
                 for single_command in  eval(command_set):
                     if int.from_bytes(eval(command_set).get(single_command),byteorder='big') == target_command_number:
