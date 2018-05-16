@@ -23,7 +23,7 @@ raw_buffer = []
 #Basic Configuration
 serial1_port="COM5"
 serial_baudrate=115200
-duration_timer = 1
+duration_time = 1
 
 test_command_set = {
     'HCI Inquiry'        : b'\x01\x01\x04\x05\x33\x8B\x9E\x30\x00', #LAP = 0x9E8B33 Len=0x30
@@ -185,7 +185,9 @@ def main():
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
 
-    '''    hci_command_test(ser, 'HCI_Read_Local_Supported_Features')
+
+    '''
+    hci_command_test(ser, 'HCI_Read_Local_Supported_Features')
     hci_command_test(ser, 'HCI_LE_Set_Event_Mask')
     hci_command_test(ser, 'HCI_LE_Read_Buffer_Size')
     hci_command_test(ser, 'HCI_Read_Buffer_Size')
@@ -195,8 +197,6 @@ def main():
     hci_command_test(ser, 'HCI_Read_Local_Version_Information')
     hci_command_test(ser, 'HCI_Inquiry')
     hci_command_test(ser, 'HCI_Inquiry_Cancel')'''
-
-
 
     hci_command_test_by_std_raw(ser,raw_buffer)
     #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
