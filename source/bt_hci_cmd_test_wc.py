@@ -14,7 +14,7 @@ import dataset.hciresponse
 path = os.getcwd() + '\\'
 app_name = __file__.replace(path,'')
 version_string = "0.0.7"
-Description_enable = True
+Description_enable = False
 raw_buffer = []
 #log
 #20180419 add the serial command test
@@ -23,7 +23,7 @@ raw_buffer = []
 #Basic Configuration
 serial1_port="COM5"
 serial_baudrate=115200
-duration_timer = 1
+duration_time = 1
 
 test_command_set = {
     'HCI Inquiry'        : b'\x01\x01\x04\x05\x33\x8B\x9E\x30\x00', #LAP = 0x9E8B33 Len=0x30
@@ -84,10 +84,11 @@ def serial_read(ser):
     return rx_data
 
 def hci_command_test(ser,str1):
-    global duration_time
+    global duration_time,Description_enable
     send_data = dataset.bt_command.generate_command(str1, True)
 
     list_byte = list(send_data)
+    print('Send the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
     if Description_enable is True:
         dataset.bt_command.description_command(send_data)
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
@@ -99,13 +100,15 @@ def hci_command_test(ser,str1):
         rx_buffer = serial_read(ser)
         if rx_buffer is not 0:
             list_byte = list(rx_buffer)
+            print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
             if Description_enable is True:
                 dataset.hciresponse.rx_data_analyzer(rx_buffer)
                 print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
     duration_time = 1
+    Description_enable = False
 
 def hci_command_test_by_inner_string(ser, str1):
-    global duration_time
+    global duration_time,Description_enable
     send_data = test_command_set.get(str1)
     list_byte = list(send_data)
 
@@ -124,14 +127,16 @@ def hci_command_test_by_inner_string(ser, str1):
                 dataset.hciresponse.rx_data_analyzer(rx_buffer)
                 print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
     duration_time = 1
+    Description_enable = False
 
 def hci_command_test_by_std_raw(ser,list1):
-    global duration_time
+    global duration_time,Description_enable
     send_data =b''
     for item in list1:
         hex_item = int(item,16)
         binary_data = int.to_bytes(hex_item,length=1,byteorder='big')
         send_data += binary_data
+    print('Send the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list(send_data)))
     if Description_enable is True:
         dataset.bt_command.description_command(send_data)
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list(send_data)))
@@ -145,10 +150,12 @@ def hci_command_test_by_std_raw(ser,list1):
         rx_buffer = serial_read(ser)
         if rx_buffer is not 0:
             list_byte = list(rx_buffer)
+            print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
             if Description_enable is True:
                 dataset.hciresponse.rx_data_analyzer(rx_buffer)
                 print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
     duration_time = 1
+    Description_enable = False
 
 def parse_args_check():
     parser = argparse.ArgumentParser(description='Usage for HCI Command Test')
@@ -158,6 +165,7 @@ def parse_args_check():
     parser.add_argument('--raw', action='store', nargs='*', dest='raw_data',  help='Using command with raw data.')
     parser.add_argument('--time', action='store', nargs=1, dest='duration', help='Scan event timer')
     parser.add_argument('-l','--license', action='store_true',dest='show_logo_switch',default=None,help='Show logo')
+    parser.add_argument('-d', '--display', action='store_true', dest='display_detail', default=None, help='Display PDU Data')
     args = parser.parse_args()
     if args.show_logo_switch is True:
         license_alarm()
@@ -174,6 +182,9 @@ def parse_args_check():
     if args.duration is not None:
         global duration_time
         duration_time = int(args.duration[0], 10)
+    if args.display_detail is True:
+        global Description_enable
+        Description_enable = True
 
 def main():
     global raw_buffer
@@ -185,7 +196,7 @@ def main():
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)
     serial_open(ser)
 
-    '''    hci_command_test(ser, 'HCI_Read_Local_Supported_Features')
+    '''hci_command_test(ser, 'HCI_Read_Local_Supported_Features')
     hci_command_test(ser, 'HCI_LE_Set_Event_Mask')
     hci_command_test(ser, 'HCI_LE_Read_Buffer_Size')
     hci_command_test(ser, 'HCI_Read_Buffer_Size')
@@ -195,8 +206,6 @@ def main():
     hci_command_test(ser, 'HCI_Read_Local_Version_Information')
     hci_command_test(ser, 'HCI_Inquiry')
     hci_command_test(ser, 'HCI_Inquiry_Cancel')'''
-
-
 
     hci_command_test_by_std_raw(ser,raw_buffer)
     #hci_command_test_by_inner_string(ser, 'HCI Inquiry Cancel')
