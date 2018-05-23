@@ -45,7 +45,9 @@ bt_hci_cmd_test_wc.py --raw 1 1 4 5 33 8b 9e 30 0
 //HCI_Inquiry_Cancel
 bt_hci_cmd_test_wc.py --raw 1 2 4 0
 ```
-
+### Script for testing
+execute_script.bat
+TI_Scan.bat
 
 ## Testing Device
 - CC2540 USB Dongle
