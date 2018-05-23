@@ -13,7 +13,7 @@ import dataset.hciresponse
 
 path = os.getcwd() + '\\'
 app_name = __file__.replace(path,'')
-version_string = "0.0.7"
+version_string = "0.7.0"
 Description_enable = False
 raw_buffer = []
 #log
@@ -23,7 +23,7 @@ raw_buffer = []
 #Basic Configuration
 serial1_port="COM5"
 serial_baudrate=115200
-duration_time = 1
+duration_time = 0
 
 test_command_set = {
     'HCI Inquiry'        : b'\x01\x01\x04\x05\x33\x8B\x9E\x30\x00', #LAP = 0x9E8B33 Len=0x30
@@ -94,17 +94,18 @@ def hci_command_test(ser,str1):
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
 
     serial_write(ser,send_data)
-    #time.sleep(.3)
+    time.sleep(.3)
     for i in range(duration_time):
-        time.sleep(.3)
-        rx_buffer = serial_read(ser)
-        if rx_buffer is not 0:
-            list_byte = list(rx_buffer)
+        time.sleep(1)
+
+    rx_buffer = serial_read(ser)
+    if rx_buffer is not 0:
+        list_byte = list(rx_buffer)
+        print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if Description_enable is True:
+            dataset.hciresponse.rx_data_analyzer(rx_buffer)
             print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-            if Description_enable is True:
-                dataset.hciresponse.rx_data_analyzer(rx_buffer)
-                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-    duration_time = 1
+    duration_time = 0
     Description_enable = False
 
 def hci_command_test_by_inner_string(ser, str1):
@@ -119,14 +120,16 @@ def hci_command_test_by_inner_string(ser, str1):
 
     time.sleep(.3)
     for i in range(duration_time):
-        time.sleep(.3)
-        rx_buffer = serial_read(ser)
-        if rx_buffer is not 0:
-            list_byte = list(rx_buffer)
-            if Description_enable is True:
-                dataset.hciresponse.rx_data_analyzer(rx_buffer)
-                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-    duration_time = 1
+        time.sleep(1)
+
+    rx_buffer = serial_read(ser)
+    if rx_buffer is not 0:
+        list_byte = list(rx_buffer)
+        print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if Description_enable is True:
+            dataset.hciresponse.rx_data_analyzer(rx_buffer)
+            print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+    duration_time = 0
     Description_enable = False
 
 def hci_command_test_by_std_raw(ser,list1):
@@ -144,8 +147,17 @@ def hci_command_test_by_std_raw(ser,list1):
     serial_write(ser,send_data)
 
     time.sleep(.3)
-
     for i in range(duration_time):
+        time.sleep(1)
+        
+    rx_buffer = serial_read(ser)
+    if rx_buffer is not 0:
+        list_byte = list(rx_buffer)
+        print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if Description_enable is True:
+            dataset.hciresponse.rx_data_analyzer(rx_buffer)
+            print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+    '''for i in range(duration_time):
         time.sleep(.3)
         rx_buffer = serial_read(ser)
         if rx_buffer is not 0:
@@ -153,8 +165,9 @@ def hci_command_test_by_std_raw(ser,list1):
             print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
             if Description_enable is True:
                 dataset.hciresponse.rx_data_analyzer(rx_buffer)
-                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-    duration_time = 1
+                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))'''
+
+    duration_time = 0
     Description_enable = False
 
 def parse_args_check():
@@ -163,7 +176,7 @@ def parse_args_check():
     parser.add_argument('--com', action='store', nargs=1, dest='com_port', help='COM Port')
     parser.add_argument('--baudrate', action='store', nargs=1, dest='baud_rate', help='Baudrate')
     parser.add_argument('--raw', action='store', nargs='*', dest='raw_data',  help='Using command with raw data.')
-    parser.add_argument('--time', action='store', nargs=1, dest='duration', help='Scan event timer')
+    parser.add_argument('--delay', action='store', nargs=1, dest='delay_duration', help='Scan event timer')
     parser.add_argument('-l','--license', action='store_true',dest='show_logo_switch',default=None,help='Show logo')
     parser.add_argument('-d', '--display', action='store_true', dest='display_detail', default=None, help='Display PDU Data')
     args = parser.parse_args()
@@ -179,9 +192,9 @@ def parse_args_check():
     if args.baud_rate is not None:
         global serial_baudrate
         serial_baudrate = int(args.baud_rate[0], 10)
-    if args.duration is not None:
+    if args.delay_duration is not None:
         global duration_time
-        duration_time = int(args.duration[0], 10)
+        duration_time = int(args.delay_duration[0], 10)
     if args.display_detail is True:
         global Description_enable
         Description_enable = True

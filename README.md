@@ -6,17 +6,21 @@ this tools use python to send hci command and get hci event via serail port.
 ```graphviz= 
 
 bt_hci_cmd_test_wc.py [-h] [-v] [--com COM_PORT] [--baudrate BAUD_RATE]
-                             [--raw [RAW_DATA [RAW_DATA ...]]] [-l]                         
+                             [--raw [RAW_DATA [RAW_DATA ...]]]
+                             [--delay DELAY_DURATION] [-l] [-d]                        
 ```
 
 ### optional arguments:
--  -h, --help            show this help message and exit
--  -v, --version         Show the bt_hci_cmd_test_wc.py version.
--  --com COM_PORT        COM Port
--  --baudrate BAUD_RATE  Baudrate
--  --raw [RAW_DATA [RAW_DATA ...]]
+  -h, --help            show this help message and exit
+  -v, --version         Show the bt_hci_cmd_test_wc.py version.
+  --com COM_PORT        COM Port
+  --baudrate BAUD_RATE  Baudrate
+  --raw [RAW_DATA [RAW_DATA ...]]
                         Using command with raw data.
--  -l, --license         Show logo
+  --delay DELAY_DURATION
+                        Scan event timer
+  -l, --license         Show logo
+  -d, --display         Display PDU Data
 
 ### Example
 ```graphviz= 
