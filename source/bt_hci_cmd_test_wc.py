@@ -13,7 +13,7 @@ import dataset.hciresponse
 
 path = os.getcwd() + '\\'
 app_name = __file__.replace(path,'')
-version_string = "0.0.7"
+version_string = "0.7.0"
 Description_enable = False
 raw_buffer = []
 #log
@@ -163,7 +163,7 @@ def parse_args_check():
     parser.add_argument('--com', action='store', nargs=1, dest='com_port', help='COM Port')
     parser.add_argument('--baudrate', action='store', nargs=1, dest='baud_rate', help='Baudrate')
     parser.add_argument('--raw', action='store', nargs='*', dest='raw_data',  help='Using command with raw data.')
-    parser.add_argument('--time', action='store', nargs=1, dest='duration', help='Scan event timer')
+    parser.add_argument('--delay', action='store', nargs=1, dest='delay_duration', help='Scan event timer')
     parser.add_argument('-l','--license', action='store_true',dest='show_logo_switch',default=None,help='Show logo')
     parser.add_argument('-d', '--display', action='store_true', dest='display_detail', default=None, help='Display PDU Data')
     args = parser.parse_args()
@@ -179,9 +179,9 @@ def parse_args_check():
     if args.baud_rate is not None:
         global serial_baudrate
         serial_baudrate = int(args.baud_rate[0], 10)
-    if args.duration is not None:
+    if args.delay_duration is not None:
         global duration_time
-        duration_time = int(args.duration[0], 10)
+        duration_time = int(args.delay_duration[0], 10)
     if args.display_detail is True:
         global Description_enable
         Description_enable = True
