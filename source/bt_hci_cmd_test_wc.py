@@ -23,7 +23,7 @@ raw_buffer = []
 #Basic Configuration
 serial1_port="COM5"
 serial_baudrate=115200
-duration_time = 1
+duration_time = 0
 
 test_command_set = {
     'HCI Inquiry'        : b'\x01\x01\x04\x05\x33\x8B\x9E\x30\x00', #LAP = 0x9E8B33 Len=0x30
@@ -94,17 +94,18 @@ def hci_command_test(ser,str1):
         print('Send the data: 0x'+' 0x'.join("{:02X}".format(b) for b in list_byte))
 
     serial_write(ser,send_data)
-    #time.sleep(.3)
+    time.sleep(.3)
     for i in range(duration_time):
-        time.sleep(.3)
-        rx_buffer = serial_read(ser)
-        if rx_buffer is not 0:
-            list_byte = list(rx_buffer)
+        time.sleep(1)
+
+    rx_buffer = serial_read(ser)
+    if rx_buffer is not 0:
+        list_byte = list(rx_buffer)
+        print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if Description_enable is True:
+            dataset.hciresponse.rx_data_analyzer(rx_buffer)
             print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-            if Description_enable is True:
-                dataset.hciresponse.rx_data_analyzer(rx_buffer)
-                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-    duration_time = 1
+    duration_time = 0
     Description_enable = False
 
 def hci_command_test_by_inner_string(ser, str1):
@@ -119,14 +120,16 @@ def hci_command_test_by_inner_string(ser, str1):
 
     time.sleep(.3)
     for i in range(duration_time):
-        time.sleep(.3)
-        rx_buffer = serial_read(ser)
-        if rx_buffer is not 0:
-            list_byte = list(rx_buffer)
-            if Description_enable is True:
-                dataset.hciresponse.rx_data_analyzer(rx_buffer)
-                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-    duration_time = 1
+        time.sleep(1)
+
+    rx_buffer = serial_read(ser)
+    if rx_buffer is not 0:
+        list_byte = list(rx_buffer)
+        print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if Description_enable is True:
+            dataset.hciresponse.rx_data_analyzer(rx_buffer)
+            print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+    duration_time = 0
     Description_enable = False
 
 def hci_command_test_by_std_raw(ser,list1):
@@ -144,8 +147,17 @@ def hci_command_test_by_std_raw(ser,list1):
     serial_write(ser,send_data)
 
     time.sleep(.3)
-
     for i in range(duration_time):
+        time.sleep(1)
+        
+    rx_buffer = serial_read(ser)
+    if rx_buffer is not 0:
+        list_byte = list(rx_buffer)
+        print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+        if Description_enable is True:
+            dataset.hciresponse.rx_data_analyzer(rx_buffer)
+            print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
+    '''for i in range(duration_time):
         time.sleep(.3)
         rx_buffer = serial_read(ser)
         if rx_buffer is not 0:
@@ -153,8 +165,9 @@ def hci_command_test_by_std_raw(ser,list1):
             print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
             if Description_enable is True:
                 dataset.hciresponse.rx_data_analyzer(rx_buffer)
-                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))
-    duration_time = 1
+                print('Receive the data: 0x' + ' 0x'.join("{:02X}".format(b) for b in list_byte))'''
+
+    duration_time = 0
     Description_enable = False
 
 def parse_args_check():
