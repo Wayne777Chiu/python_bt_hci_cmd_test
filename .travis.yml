@@ -1,6 +1,7 @@
 language: python
 python:
   - 3.6.4
-before_install: pip freeze
+before_install: 
+  - pip install serial
 script:
   - python .//source//bt_hci_cmd_test_wc.py
