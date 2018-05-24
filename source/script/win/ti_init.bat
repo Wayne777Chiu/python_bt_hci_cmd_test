@@ -1,6 +1,6 @@
 @echo off
 
-SET cmdpath=..\..\..
+SET cmdpath=..\..
 if %1a==a goto init
 
 :init
@@ -35,6 +35,7 @@ echo                   When Using Connection Establishment
 echo                   Proc (mSec). TGAP_CONN_EST_SUPERV_TIMEOUT)
 %cmdpath%\bt_hci_cmd_test_wc.py --raw 1 31 fe 1 19
 
+goto gotoexit
 if %1==1 goto scan
 if %1==2 goto test2
 if %1==3 goto test3
@@ -54,3 +55,6 @@ ti_schedule.bat 4 %cmdpath%
 
 :EOF
 echo Not Parameters.
+
+:gotoexit
+echo exit
