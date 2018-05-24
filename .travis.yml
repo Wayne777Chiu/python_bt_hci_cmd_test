@@ -1,0 +1,5 @@
+language: python
+python:
+  - 3.6.4
+script:
+  - python .\\source\\bt_hci_cmd_test_wc.py
