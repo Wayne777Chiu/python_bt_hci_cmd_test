@@ -13,13 +13,11 @@ echo  AddressType    : 0x00 (0) (Public Device Address)
 echo  DeviceAddr     : 00:00:00:00:00:00
 %cmdpath%\bt_hci_cmd_test_wc.py --raw 01 12 20 07 00 00 00 00 00 00 00 -d
 
-if %1a==1a  goto schedulelist
 
-goto gotoexit
+if %1a==a goto gotoexit
 
 :schedulelist
-cd data
-ti_schedule.bat 1 %2 %3
+%4.bat 0 %2 %3 %4
 
 :gotoexit
 echo exit

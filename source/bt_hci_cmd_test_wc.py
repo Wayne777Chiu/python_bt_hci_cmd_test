@@ -203,7 +203,6 @@ def main():
     global raw_buffer
     command_for_return_parameter = None
     parse_args_check()
-
     #init...
     #serial_baudrate1 = int(serial_baudrate,0)
     ser = serial.Serial(serial1_port,serial_baudrate,timeout=None, xonxoff=False,rtscts=False,dsrdtr=False)

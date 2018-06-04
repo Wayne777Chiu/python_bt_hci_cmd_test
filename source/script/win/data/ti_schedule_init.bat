@@ -1,7 +1,7 @@
 @echo off
 
 SET cmdpath=..\..\..
-if %1a==a goto init
+if %1a==1a goto init
 
 :init
 echo this is for TI Dongle CC2540
@@ -40,8 +40,9 @@ if %1==2 goto test2
 if %1==3 goto test3
 if %1==4 goto test4
 
-:starttest 
-ti_schedule.bat 1 %2 %3
+:starttest
+cd ..
+%4.bat 0 %2 %3 %4
 
 :EOF
 echo Not Parameters.
