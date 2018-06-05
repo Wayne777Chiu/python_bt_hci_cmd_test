@@ -13,7 +13,7 @@ echo  AdType         : 0x01 (1) (Advertisement Data)
 echo  DataLength     : 0x03 (3)
 echo  AdvertData     : 02:01:06
 
-%cmdpath%\bt_hci_cmd_test_wc.py --raw 01 07 FE 05 01 03 02 01 06 --delay 2
+%cmdpath%\bt_hci_cmd_test_wc.py --raw 01 07 FE 05 01 03 02 01 06 --delay 5
 
 
 if %1a==a goto gotoexit

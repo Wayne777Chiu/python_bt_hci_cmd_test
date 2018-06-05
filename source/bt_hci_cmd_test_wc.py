@@ -21,7 +21,7 @@ raw_buffer = []
 
 
 #Basic Configuration
-serial1_port="COM5"
+serial1_port="COM8"
 serial_baudrate=115200
 duration_time = 0
 
