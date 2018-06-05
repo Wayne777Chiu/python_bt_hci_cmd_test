@@ -16,13 +16,10 @@ echo  WhiteList      : 0x00 (0) (Disable)
 %cmdpath%\bt_hci_cmd_test_wc.py --raw 1 4 fe 3 3 1 0 --delay 10
 
 
-if %1a==1a  goto schedulelist
-
-goto gotoexit
+if %1a==a goto gotoexit
 
 :schedulelist
-cd data
-ti_schedule.bat 1 %2 %3
+%4.bat 0 %2 %3 %4
 
 :gotoexit
-echo exit
+echo exitt

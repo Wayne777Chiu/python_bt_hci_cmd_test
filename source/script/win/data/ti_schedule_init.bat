@@ -1,11 +1,19 @@
 @echo off
 
 SET cmdpath=..\..\..
-if %1a==a goto init
+if %1a==1a goto init
 
 :init
 echo this is for TI Dongle CC2540
 echo GAP_DeviceInit
+echo -Type           : 0x01 (Command)
+echo -OpCode         : 0xFE00 (GAP_DeviceInit)
+echo -Data Length    : 0x26 (38) byte(s)
+echo  ProfileRole    : 0x08 (8) (Central)
+echo  MaxScanRsps    : 0x05 (5)
+echo  IRK            : 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+echo  CSRK           : 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+echo  SignCounter    : 0x00000001 (1)
 %cmdpath%\bt_hci_cmd_test_wc.py --raw 1 0 fe 26 08 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
 
 echo -OpCode         : 0xFE31 (GAP_GetParam)
@@ -40,8 +48,9 @@ if %1==2 goto test2
 if %1==3 goto test3
 if %1==4 goto test4
 
-:starttest 
-ti_schedule.bat 1 %2 %3
+:starttest
+cd ..
+%4.bat 0 %2 %3 %4
 
 :EOF
 echo Not Parameters.
