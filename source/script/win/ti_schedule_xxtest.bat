@@ -10,7 +10,7 @@ if %1a==0a goto starttest
 
 :init
 cd data
-ti_schedule_init.bat 1 1 6 ti_schedule_xxtest
+ti_schedule_init.bat 1 1 7 ti_schedule_xxtest
 
 :starttest
 if %2a==a   goto init_var
@@ -18,7 +18,7 @@ if %2a==%2a goto gototest
 
 :init_var
 SET /a two_pos   = 1
-SET /a three_pos = 6
+SET /a three_pos = 7
 goto gotoschedule
 
 :gototest
@@ -26,7 +26,7 @@ SET /a two_pos = %2
 SET /a three_pos = %3
 
 :gotoschedule
-SET FILE_IN=ti_schedule_peri
+SET FILE_IN=ti_schedule_xxtest
 SET /a tmpnum = %two_pos% + 1
 SET /a endnum = %three_pos% + 1
 
@@ -38,6 +38,7 @@ if %two_pos% == 3 goto step3
 if %two_pos% == 4 goto step4
 if %two_pos% == 5 goto step5
 if %two_pos% == 6 goto step6
+if %two_pos% == 7 goto step7
 
 :step1
 ti_scan.bat 0 %tmpnum% %three_pos% %FILE_IN%
@@ -63,7 +64,7 @@ ti_readleLSF.bat 0 %tmpnum% %three_pos% %FILE_IN%
 ti_readlewls.bat 0 %tmpnum% %three_pos% %FILE_IN%
 
 
-:step6
+:step7
 ti_readLSF.bat 0 %tmpnum% %three_pos% %FILE_IN%
 
 :gotoexit
